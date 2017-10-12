@@ -6,7 +6,7 @@ A golang parser and cli tool for [security.txt](https://securitytxt.org/)
 
 If you want to use this as a library:
 
-```
+```go
 package main
 
 import (
@@ -27,7 +27,7 @@ func main() {
 
 You can use the cli like:
 
-```bash
+```
 $ security-txt -address https://securitytxt.org
 security.txt for https://securitytxt.org
   Contact: https://twitter.com/EdOverflow
