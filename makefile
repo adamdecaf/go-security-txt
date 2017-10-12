@@ -14,10 +14,10 @@ win_32:
 win_64:
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o bin/security-txt-amd64.exe github.com/adamdecaf/go-security-txt/cmd
 
-build: check linux osx win
+dist: check linux osx win
 	@chmod +x bin/*
 
-dev: check
+build: check
 	go build -o bin/security-txt github.com/adamdecaf/go-security-txt/cmd
 	@chmod +x bin/*
 
