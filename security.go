@@ -11,8 +11,8 @@ import (
 
 const (
 	fieldSeparator = ":"
-	lineSeparator = "\n"
-	filename = "security.txt"
+	lineSeparator  = "\n"
+	filename       = "security.txt"
 )
 
 type SecurityTxt struct {
@@ -21,8 +21,8 @@ type SecurityTxt struct {
 
 	// Optional fields
 	Acknowledgements Acknowledgements
-	Disclosure Disclosure
-	Encryption Encryption
+	Disclosure       Disclosure
+	Encryption       Encryption
 }
 
 func Read(addr string) (*SecurityTxt, error) {
@@ -133,6 +133,7 @@ func setupHttpClient() *http.Client {
 // Records
 
 type Acknowledgements string
+
 func (a Acknowledgements) Empty() bool {
 	return len(string(a)) == 0
 }
@@ -147,6 +148,7 @@ func parseAcknowledgements(val string) Acknowledgements {
 }
 
 type Contact string
+
 func (c Contact) Empty() bool {
 	return len(string(c)) == 0
 }
@@ -168,6 +170,7 @@ func parseContact(val string) Contact {
 }
 
 type Disclosure string
+
 func (d Disclosure) Empty() bool {
 	return len(string(d)) == 0
 }
@@ -188,6 +191,7 @@ func parseDisclosure(val string) Disclosure {
 }
 
 type Encryption url.URL
+
 func (e Encryption) Empty() bool {
 	return e.Host == ""
 }
