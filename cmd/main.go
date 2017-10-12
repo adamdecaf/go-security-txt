@@ -12,6 +12,11 @@ var (
 	fs = flag.NewFlagSet("flag", flag.ExitOnError)
 
 	address = fs.String("address", "", "The address to check for a security.txt file")
+	version = fs.Bool("version", false, "Show the version")
+)
+
+const (
+	Version = "0.1.0"
 )
 
 func main() {
@@ -24,6 +29,11 @@ func main() {
 			os.Exit(1)
 		}
 		output(*address, *sec)
+		os.Exit(0)
+	}
+
+	if version != nil && *version {
+		fmt.Printf("security-txt: %s\n", Version)
 		os.Exit(0)
 	}
 
