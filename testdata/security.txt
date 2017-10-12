@@ -1,0 +1,4 @@
+Contact: security@example.com
+Encryption: https://example.com/security.gpg
+Acknowledgements: https://example.com/about/security
+Disclosure: Full
