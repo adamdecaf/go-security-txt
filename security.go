@@ -195,14 +195,32 @@ func (e Encryption) Equal(s string) bool {
 	return e.Host == u.Host && e.Path == u.Path
 }
 func (s SecurityTxt) checkEncryption(val string) (Encryption, error) {
+	empty := Encryption(url.URL{})
 	u, err := url.Parse(val)
 	if err != nil {
-		return Encryption(*u), err
+		return empty, err
 	}
 
 	// Verify the link is over https
 	if u.Scheme != "https" {
-		return Encryption(*u), errors.New("encryption email not over https")
+		return empty, errors.New("encryption email not over https")
+	}
+
+	// verify key is coming from the same hostname
+	if s.originalUrl != nil {
+		if s.originalUrl.Hostname() != u.Hostname() {
+			return empty, errors.New("encryption isn't on the same hostname")
+		}
+	}
+
+	// Check response status
+	client := setupHttpClient()
+	resp, err := client.Get(u.String())
+	if err != nil {
+		return empty, err
+	}
+	if resp.StatusCode != 200 {
+		return empty, fmt.Errorf("bad response status: %s", resp.Status)
 	}
 
 	return Encryption(*u), nil

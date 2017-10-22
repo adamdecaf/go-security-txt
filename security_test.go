@@ -40,13 +40,13 @@ func TestSecurity__parse(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !sec.Acknowledgements.Equal("https://example.com/") {
+	if !sec.Acknowledgements.Equal("https://securitytxt.org/") {
 		t.Fatalf("Acknowledgements was something else: %s", sec.Acknowledgements)
 	}
 	if !sec.Contact.Equal("security@example.com") {
 		t.Fatalf("Contact was something else: %s", sec.Contact)
 	}
-	if !sec.Encryption.Equal("https://example.com/security.gpg") {
+	if !sec.Encryption.Equal("https://securitytxt.org/") {
 		t.Fatalf("Encryption was something else: %v", sec.Encryption)
 	}
 }
