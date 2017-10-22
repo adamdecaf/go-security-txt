@@ -47,9 +47,6 @@ func output(addr string, sec sectext.SecurityTxt) {
 	if !sec.Acknowledgements.Empty() {
 		fmt.Printf("  Acknowledgements: %s\n", sec.Acknowledgements)
 	}
-	if !sec.Disclosure.Empty() {
-		fmt.Printf("  Disclosure: %s", sec.Disclosure)
-	}
 	if !sec.Encryption.Empty() {
 		fmt.Printf("  Encryption: %s", sec.Encryption)
 	}

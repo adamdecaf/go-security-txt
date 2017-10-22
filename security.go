@@ -21,7 +21,6 @@ type SecurityTxt struct {
 
 	// Optional fields
 	Acknowledgements Acknowledgements
-	Disclosure       Disclosure
 	Encryption       Encryption
 }
 
@@ -84,10 +83,6 @@ func Parse(body *bufio.Scanner) (*SecurityTxt, error) {
 		case "contact":
 			if c := parseContact(val); !c.Empty() {
 				sec.Contact = c
-			}
-		case "disclosure":
-			if d := parseDisclosure(val); !d.Empty() {
-				sec.Disclosure = d
 			}
 		case "encryption":
 			if e := parseEncryption(val); !e.Empty() {
@@ -169,26 +164,6 @@ func parseContact(val string) Contact {
 	return Contact("")
 }
 
-type Disclosure string
-
-func (d Disclosure) Empty() bool {
-	return len(string(d)) == 0
-}
-func (d Disclosure) Equal(s string) bool {
-	return strings.ToLower(string(d)) == strings.ToLower(s)
-}
-func parseDisclosure(val string) Disclosure {
-	clean := strings.ToLower(val)
-	switch clean {
-	case "none":
-		return Disclosure("none")
-	case "partial":
-		return Disclosure("partial")
-	case "full":
-		return Disclosure("full")
-	}
-	return Disclosure("")
-}
 
 type Encryption url.URL
 

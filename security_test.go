@@ -15,9 +15,6 @@ func TestSecurity__read(t *testing.T) {
 	if !s1.Contact.Equal("https://twitter.com/EdOverflow") {
 		t.Fatalf("s1.Contact was something else: %s", s1.Contact)
 	}
-	if !s1.Disclosure.Empty() {
-		t.Fatalf("s1.Disclosure was non-empty: %s", s1.Disclosure)
-	}
 	if !s1.Encryption.Empty() {
 		t.Fatalf("s1.Encryption was non-empty: %v", s1.Encryption)
 	}
@@ -32,9 +29,6 @@ func TestSecurity__read(t *testing.T) {
 	}
 	if !s2.Contact.Equal("https://twitter.com/EdOverflow") {
 		t.Fatalf("s2.Contact was something else: %s", s2.Contact)
-	}
-	if !s2.Disclosure.Empty() {
-		t.Fatalf("s2.Disclosure was non-empty: %s", s2.Disclosure)
 	}
 	if !s2.Encryption.Empty() {
 		t.Fatalf("s2.Encryption was non-empty: %v", s2.Encryption)
@@ -51,9 +45,6 @@ func TestSecurity__parse(t *testing.T) {
 	}
 	if !sec.Contact.Equal("security@example.com") {
 		t.Fatalf("sec.Contact was something else: %s", sec.Contact)
-	}
-	if !sec.Disclosure.Equal("Full") {
-		t.Fatalf("sec.Disclosure was something else: %s", sec.Disclosure)
 	}
 	if !sec.Encryption.Equal("https://example.com/security.gpg") {
 		t.Fatalf("sec.Encryption was something else: %v", sec.Encryption)
