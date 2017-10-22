@@ -93,11 +93,19 @@ func Parse(body *bufio.Scanner) (*SecurityTxt, error) {
 			}
 			sec.Acknowledgements = ack
 		case "contact":
-			if c := parseContact(val); !c.Empty() {
+			c, err := sec.checkContact(val)
+			if err != nil {
+				return nil, err
+			}
+			if !c.Empty() {
 				sec.Contact = c
 			}
 		case "encryption":
-			if e := parseEncryption(val); !e.Empty() {
+			e, err := sec.checkEncryption(val)
+			if err != nil {
+				return nil, err
+			}
+			if !e.Empty() {
 				sec.Encryption = e
 			}
 		}
@@ -157,18 +165,18 @@ func (c Contact) Empty() bool {
 func (c Contact) Equal(s string) bool {
 	return strings.ToLower(string(c)) == strings.ToLower(s)
 }
-func parseContact(val string) Contact {
+func (s SecurityTxt) checkContact(val string) (Contact, error) {
 	// TODO(adam): real validation
 	if strings.Contains(val, "@") {
-		return Contact(val)
+		return Contact(val), nil
 	}
 	if strings.Contains(val, "http") {
-		return Contact(val)
+		return Contact(val), nil
 	}
 	if len(val) == 7 || len(val) == 10 || strings.Contains(val, "-") {
-		return Contact(val)
+		return Contact(val), nil
 	}
-	return Contact("")
+	return "", errors.New("invalid contact")
 }
 
 type Encryption url.URL
@@ -186,10 +194,16 @@ func (e Encryption) Equal(s string) bool {
 	// Some sites/pages would still present the same content
 	return e.Host == u.Host && e.Path == u.Path
 }
-func parseEncryption(val string) Encryption {
+func (s SecurityTxt) checkEncryption(val string) (Encryption, error) {
 	u, err := url.Parse(val)
 	if err != nil {
-		return Encryption(url.URL{})
+		return Encryption(*u), err
 	}
-	return Encryption(*u)
+
+	// Verify the link is over https
+	if u.Scheme != "https" {
+		return Encryption(*u), errors.New("encryption email not over https")
+	}
+
+	return Encryption(*u), nil
 }
