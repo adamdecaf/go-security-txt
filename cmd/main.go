@@ -43,11 +43,5 @@ func main() {
 
 func output(addr string, sec sectext.SecurityTxt) {
 	fmt.Printf("security.txt for %s\n", addr)
-	fmt.Printf("  Contact: %s\n", sec.Contact)
-	if !sec.Acknowledgements.Empty() {
-		fmt.Printf("  Acknowledgements: %s\n", sec.Acknowledgements)
-	}
-	if !sec.Encryption.Empty() {
-		fmt.Printf("  Encryption: %s", sec.Encryption)
-	}
+	fmt.Println(sec.String())
 }

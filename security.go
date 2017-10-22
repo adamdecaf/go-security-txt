@@ -2,7 +2,8 @@ package securitytxt
 
 import (
 	"bufio"
-	"net/http"
+	"errors"
+	"fmt"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -22,30 +23,39 @@ type SecurityTxt struct {
 	// Optional fields
 	Acknowledgements Acknowledgements
 	Encryption       Encryption
+
+	// Private fields
+	originalUrl *url.URL
+}
+
+func (s SecurityTxt) String() string {
+	out := ""
+	out += fmt.Sprintf("  Contact: %s\n", s.Contact)
+	if !s.Acknowledgements.empty() {
+		out += fmt.Sprintf("  Acknowledgements: %s\n", s.Acknowledgements)
+	}
+	if !s.Encryption.Empty() {
+		out += fmt.Sprintf("  Encryption: %v", s.Encryption)
+	}
+	return out
 }
 
 func FromUrl(addr string) (*SecurityTxt, error) {
-	addr, err := fixupAddr(addr)
+	u, err := fixupAddr(addr)
 	if err != nil {
 		return nil, err
 	}
 
-	body, err := getBody(addr)
+	body, err := getBody(u.String())
 	if err != nil {
 		return nil, err
 	}
-	return Parse(body)
-}
 
-func fixupAddr(addr string) (string, error) {
-	u, err := url.Parse(addr)
-	if err != nil {
-		return "", err
+	sec, err := Parse(body)
+	if sec != nil {
+		sec.originalUrl = u
 	}
-	if !strings.HasSuffix(u.Path, filename) {
-		u.Path = filename
-	}
-	return u.String(), nil
+	return sec, err
 }
 
 func FromFile(p string) (*SecurityTxt, error) {
@@ -77,9 +87,11 @@ func Parse(body *bufio.Scanner) (*SecurityTxt, error) {
 		// basic matcher
 		switch strings.ToLower(key) {
 		case "acknowledgements":
-			if a := parseAcknowledgements(val); !a.Empty() {
-				sec.Acknowledgements = a
+			ack, err := sec.checkAcknowledgements(val)
+			if err != nil {
+				return nil, err
 			}
+			sec.Acknowledgements = ack
 		case "contact":
 			if c := parseContact(val); !c.Empty() {
 				sec.Contact = c
@@ -98,48 +110,43 @@ func Parse(body *bufio.Scanner) (*SecurityTxt, error) {
 	return &sec, nil
 }
 
-func getBody(addr string) (*bufio.Scanner, error) {
-	client := setupHttpClient()
-	resp, err := client.Get(addr)
-	if err != nil {
-		if resp.Body != nil {
-			e2 := resp.Body.Close()
-			if e2 != nil {
-				return nil, e2
-			}
-		}
-		return nil, err
-	}
-
-	s := bufio.NewScanner(resp.Body)
-	s.Split(bufio.ScanLines)
-	return s, nil
-}
-
-// TODO(adam): way more configs setup
-// - lower max response size
-// - timeouts/deadlines
-// - force tls?
-// - etc...
-func setupHttpClient() *http.Client {
-	return http.DefaultClient
-}
-
 // Records
 
 type Acknowledgements string
 
-func (a Acknowledgements) Empty() bool {
+func (a Acknowledgements) empty() bool {
 	return len(string(a)) == 0
 }
 func (a Acknowledgements) Equal(s string) bool {
 	return strings.ToLower(string(a)) == strings.ToLower(s)
 }
-func parseAcknowledgements(val string) Acknowledgements {
-	if strings.Contains(val, "http") {
-		return Acknowledgements(val)
+func (s SecurityTxt) checkAcknowledgements(val string) (Acknowledgements, error) {
+	if !strings.Contains(val, "http") {
+		return "", errors.New("acknowledgement needs to contain a link")
 	}
-	return Acknowledgements("")
+
+	// Verify the ack link is on the same domain
+	u, err := url.Parse(val)
+	if err != nil {
+		return "", err
+	}
+	if s.originalUrl != nil {
+		if s.originalUrl.Hostname() != u.Hostname() {
+			return "", errors.New("acknowledgement link is on a different url")
+		}
+	}
+
+	// Check the site resolves
+	client := setupHttpClient()
+	resp, err := client.Get(u.String())
+	if err != nil {
+		return "", err
+	}
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("bad response status: %s", resp.Status)
+	}
+
+	return Acknowledgements(u.String()), nil
 }
 
 type Contact string
@@ -163,7 +170,6 @@ func parseContact(val string) Contact {
 	}
 	return Contact("")
 }
-
 
 type Encryption url.URL
 

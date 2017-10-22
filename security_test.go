@@ -9,7 +9,7 @@ func TestSecurity__read(t *testing.T) {
 	if e1 != nil {
 		t.Fatal(e1)
 	}
-	if !s1.Acknowledgements.Empty() {
+	if !s1.Acknowledgements.empty() {
 		t.Fatalf("s1.Acknowledgements was non-empty: %s", s1.Acknowledgements)
 	}
 	if !s1.Contact.Equal("https://twitter.com/EdOverflow") {
@@ -24,7 +24,7 @@ func TestSecurity__read(t *testing.T) {
 	if e2 != nil {
 		t.Fatal(e2)
 	}
-	if !s2.Acknowledgements.Empty() {
+	if !s2.Acknowledgements.empty() {
 		t.Fatalf("s2.Acknowledgements was non-empty: %s", s2.Acknowledgements)
 	}
 	if !s2.Contact.Equal("https://twitter.com/EdOverflow") {
@@ -40,13 +40,13 @@ func TestSecurity__parse(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !sec.Acknowledgements.Equal("https://example.com/about/security") {
-		t.Fatalf("sec.Acknowledgements was something else: %s", sec.Acknowledgements)
+	if !sec.Acknowledgements.Equal("https://example.com/") {
+		t.Fatalf("Acknowledgements was something else: %s", sec.Acknowledgements)
 	}
 	if !sec.Contact.Equal("security@example.com") {
-		t.Fatalf("sec.Contact was something else: %s", sec.Contact)
+		t.Fatalf("Contact was something else: %s", sec.Contact)
 	}
 	if !sec.Encryption.Equal("https://example.com/security.gpg") {
-		t.Fatalf("sec.Encryption was something else: %v", sec.Encryption)
+		t.Fatalf("Encryption was something else: %v", sec.Encryption)
 	}
 }
