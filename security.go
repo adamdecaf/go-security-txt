@@ -24,7 +24,7 @@ type SecurityTxt struct {
 	Encryption       Encryption
 }
 
-func Read(addr string) (*SecurityTxt, error) {
+func FromUrl(addr string) (*SecurityTxt, error) {
 	addr, err := fixupAddr(addr)
 	if err != nil {
 		return nil, err

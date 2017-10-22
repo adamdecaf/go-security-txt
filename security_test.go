@@ -5,7 +5,7 @@ import (
 )
 
 func TestSecurity__read(t *testing.T) {
-	s1, e1 := Read("https://securitytxt.org/")
+	s1, e1 := FromUrl("https://securitytxt.org/")
 	if e1 != nil {
 		t.Fatal(e1)
 	}
@@ -20,7 +20,7 @@ func TestSecurity__read(t *testing.T) {
 	}
 
 	// full addr
-	s2, e2 := Read("https://securitytxt.org/security.txt")
+	s2, e2 := FromUrl("https://securitytxt.org/security.txt")
 	if e2 != nil {
 		t.Fatal(e2)
 	}

@@ -23,7 +23,7 @@ func main() {
 	fs.Parse(os.Args[1:])
 
 	if address != nil && *address != "" {
-		sec, err := sectext.Read(*address)
+		sec, err := sectext.FromUrl(*address)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

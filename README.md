@@ -15,7 +15,7 @@ import (
 
 func main() {
     addr := "https://securitytxt.org"
-    sec, err := sectext.Read(addr)
+    sec, err := sectext.FromUrl(addr)
     if err != nil {
 			fmt.Println(err)
     }
